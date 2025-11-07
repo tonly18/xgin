@@ -24,9 +24,6 @@ func NewXGinEngine(opts ...gin.OptionFunc) *XGinEngine {
 
 	ginEngine := gin.New(opts...)
 
-	//默认中间件
-	ginEngine.Use(defaultMiddleware())
-
 	//return
 	return &XGinEngine{
 		xRouteGroup: &XRouteGroup{

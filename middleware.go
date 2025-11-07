@@ -7,25 +7,17 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/google/uuid"
 	"github.com/tonly18/xgin/logger"
 	"github.com/tonly18/xgin/xglobal"
 )
 
-func defaultMiddleware() gin.HandlerFunc {
+func DefaultMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		//start time
 		startTime := time.Now()
 
 		//IP
 		c.Set(xglobal.ClientIp, c.ClientIP())
-
-		//trace id
-		traceId := c.Request.Header.Get("trace_id")
-		if traceId == "" {
-			traceId = uuid.New().String()
-		}
-		c.Set(xglobal.TraceId, traceId)
 
 		//打印请求参数
 		printParams(c)

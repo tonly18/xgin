@@ -30,6 +30,9 @@ func main() {
 
 	xGinEngine := xgin.NewXGinEngine()
 	xGinEngine.Use(middleware.RecoverPanic())
+	
+	//最后调用xgin默认中间件
+	xGinEngine.Use(xgin.DefaultMiddleware())
 
 	xGinEngine.GET("/abc", &controller.ABCHandler{})
 
