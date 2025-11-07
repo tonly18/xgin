@@ -60,7 +60,7 @@ func (e *XGinEngine) Group(path string, handlers ...gin.HandlerFunc) *XRouteGrou
 	return e.xRouteGroup
 }
 
-func (e *XGinEngine) GetGroup() *XRouteGroup {
+func (e *XGinEngine) GetXRouteGroup() *XRouteGroup {
 	return e.xRouteGroup
 }
 
