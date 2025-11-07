@@ -10,6 +10,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tonly18/xgin/logger"
+	"github.com/tonly18/xgin/xglobal"
 )
 
 // RecoverPanic 中间件: recover处理panic
@@ -47,6 +48,8 @@ func RecoverPanic() gin.HandlerFunc {
 				}
 			}
 		}()
+
+		c.Set(xglobal.UserId, "222333")
 
 		// before request
 		c.Next()

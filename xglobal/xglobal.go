@@ -3,6 +3,7 @@ package xglobal
 import "github.com/gin-gonic/gin"
 
 const (
+	UserId   = "user_id"
 	ClientIp = "client_ip"
 	TraceId  = "trace_id"
 )

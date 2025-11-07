@@ -19,6 +19,9 @@ type TestHandler struct {
 func (c *TestHandler) Handler(req *request.Request) (*response.Response, xerror.Error) {
 	fmt.Println("TestHandler start...", time.Now().Format(time.DateTime))
 
+	uid := req.GetUid()
+	fmt.Println("------uid:", uid)
+
 	x := req.GetCtx().Query("x")
 	ix := cast.ToInt(x)
 
