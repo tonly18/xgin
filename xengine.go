@@ -60,6 +60,10 @@ func (e *XGinEngine) Group(path string, handlers ...gin.HandlerFunc) *XRouteGrou
 	return e.xRouteGroup
 }
 
+func (e *XGinEngine) GetGroup() *XRouteGroup {
+	return e.xRouteGroup
+}
+
 func (e *XGinEngine) GET(relativePath string, handler iface.IHandler) gin.IRoutes {
 	return e.xRouteGroup.GET(relativePath, handler)
 }
