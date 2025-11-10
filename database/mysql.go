@@ -14,10 +14,8 @@ import (
 
 var gormDB map[string]*gorm.DB
 
-func InitDB(c []*MySqlConfig) {
-	if err := initMysql(c); err != nil {
-		panic(err)
-	}
+func InitDB(c []*MySqlConfig) error {
+	return initMysql(c)
 }
 
 func initMysql(c []*MySqlConfig) error {

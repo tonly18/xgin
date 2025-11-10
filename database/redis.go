@@ -12,10 +12,8 @@ import (
 
 var redisConn *redis.ClusterClient
 
-func InitRedis(c *RedisClusterConfig) {
-	if err := initRedis(c); err != nil {
-		panic(err)
-	}
+func InitRedis(c *RedisClusterConfig) error {
+	return initRedis(c)
 }
 
 func initRedis(c *RedisClusterConfig) error {
