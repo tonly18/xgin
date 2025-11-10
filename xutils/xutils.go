@@ -2,11 +2,20 @@ package xutils
 
 import (
 	"context"
+	"errors"
 	"net"
+	"runtime"
+	"strings"
+	"time"
 	"unsafe"
 
 	"github.com/tonly18/xgin/logger"
 )
+
+var Timeout = errors.New("timeout")
+
+// 并发协程数量
+var goChanNumber = make(chan struct{}, 600)
 
 type eface struct {
 	typ unsafe.Pointer
@@ -66,8 +75,8 @@ func IsPrivateIP(ips string) bool {
 	return false
 }
 
-// IsRequestFromLocal 是否为本机IP
-func IsRequestFromLocal(ip string) bool {
+// IsLocalIP 是否为本机IP
+func IsLocalIP(ip string) bool {
 	parsed := net.ParseIP(ip)
 	if parsed == nil {
 		return false
@@ -91,16 +100,31 @@ func IsRequestFromLocal(ip string) bool {
 	return false
 }
 
-func GO(handler func()) {
-	go func() {
-		defer func() {
-			if err := recover(); err != nil {
-				logger.Errorf(context.Background(), "GO panic: %+v", err)
-			}
+func GO(handler func()) error {
+	timer := time.NewTimer(500 * time.Millisecond)
+	defer timer.Stop()
+
+	select {
+	case <-timer.C:
+		return Timeout
+	case goChanNumber <- struct{}{}:
+		go func() {
+			defer func() {
+				_ = <-goChanNumber
+				if err := recover(); err != nil {
+					pc, _, _, _ := runtime.Caller(2)
+					fn := runtime.FuncForPC(pc).Name()
+					if i := strings.LastIndex(fn, "/"); i != -1 {
+						fn = fn[i+1:]
+					}
+					logger.Errorf(context.Background(), "GO panic recover(%v) %d/%d, error: %+v", fn, len(goChanNumber), cap(goChanNumber), err)
+				}
+			}()
+			handler()
 		}()
 
-		handler()
-	}()
+		return nil
+	}
 }
 
 // BytesToString []byte转string
