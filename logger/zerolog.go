@@ -4,10 +4,10 @@ import (
 	"context"
 	"fmt"
 	"os"
+	"path/filepath"
 	"runtime"
 	"time"
 
-	"github.com/tonly18/xgin/logger/hook"
 	"github.com/tonly18/xgin/xglobal"
 
 	"github.com/rs/zerolog"
@@ -16,10 +16,10 @@ import (
 // logger
 var logger zerolog.Logger
 
-func Init(file string) {
+func Init(file ...string) {
 	output := os.Stdout
-	if file != "" {
-		fs, err := os.OpenFile(file, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
+	if len(file) > 0 {
+		fs, err := os.OpenFile(file[0], os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0666)
 		if err != nil {
 			panic(fmt.Sprintf("open log file is error: %v", err))
 		}
@@ -30,9 +30,14 @@ func Init(file string) {
 	}
 
 	// 初始化 console logger
+	zerolog.CallerMarshalFunc = func(pc uintptr, file string, line int) string {
+		_, file, line, _ = runtime.Caller(6)
+		return fmt.Sprintf("%s:%d", filepath.Base(file), line)
+	}
 	zerolog.TimeFieldFormat = time.DateTime
 	zerolog.SetGlobalLevel(zerolog.DebugLevel)
-	logger = zerolog.New(output).With().Timestamp().Logger().Hook(&hook.ZeroLogHook{})
+
+	logger = zerolog.New(output).With().Caller().Timestamp().Logger().Hook(&ZeroLogHook{})
 }
 
 func Debug(ctx context.Context, args ...any) {
